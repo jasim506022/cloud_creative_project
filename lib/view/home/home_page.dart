@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({
@@ -21,6 +22,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _counter = 0;
 
+  int _currentIndex = 0;
+  bool _isExpanded = false;
+
   void _incrementCounter() {
     setState(() {
       // This call to setState tells the Flutter framework that something has
@@ -41,34 +45,56 @@ class _HomePageState extends State<HomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text("Hello"),
-        centerTitle: true,
-        actions: [Icon(Icons.shopping_bag)],
-      ),
-      drawer: Drawer(),
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+      body: Center(child: Text("Selected Page: $_currentIndex")),
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (_isExpanded)
+            Container(
+              color: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _extraItem(Icons.settings, "Settings"),
+                  _extraItem(Icons.notifications, "Alerts"),
+                  _extraItem(Icons.help, "Help"),
+                ],
+              ),
             ),
-            Image.asset("assets/app_images/Theme.png"),
-            Text(
-              "Maximum Note 8i",
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            Text(
-                "Powered by a 10nm octa-core Qualcomm Snapdragon 712 AIE processor this phone can seamlessly execute any task. You can game more and multitask without experience any any lag. Experience a boost in performance and efficiency with this phone")
-          ],
-        ),
+          ConvexAppBar(
+            style: TabStyle.reactCircle,
+            items: [
+              TabItem(icon: Icons.home, title: "Home"),
+              TabItem(icon: Icons.search, title: "Search"),
+              TabItem(icon: Icons.add_circle, title: ""),
+              TabItem(icon: Icons.favorite, title: "Favorites"),
+              TabItem(icon: Icons.person, title: "Profile"),
+            ],
+            initialActiveIndex: _currentIndex,
+            onTap: (index) {
+              if (index == 2) {
+                setState(() => _isExpanded = !_isExpanded);
+              } else {
+                setState(() {
+                  _currentIndex = index;
+                  _isExpanded = false;
+                });
+              }
+            },
+          ),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+
+  Widget _extraItem(IconData icon, String label) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 28, color: Colors.blue),
+        Text(label, style: TextStyle(fontSize: 12, color: Colors.black)),
+      ],
     );
   }
 }
